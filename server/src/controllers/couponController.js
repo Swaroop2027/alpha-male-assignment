@@ -1,6 +1,24 @@
 import Coupon from "../models/Coupon.js";
 import { ApiError, sendResponse } from "../utils/apiResponse.js";
 
+// @desc    Get all active coupons for shoppers (Checkout & Promotions)
+// @route   GET /api/coupons/active
+// @access  Public
+export const getActiveCoupons = async (req, res, next) => {
+  try {
+    const coupons = await Coupon.find({
+      isActive: true,
+      expiryDate: { $gt: new Date() },
+    })
+      .select("code discountType discountValue minOrderValue maxDiscountAmount")
+      .sort({ minOrderValue: 1 });
+
+    return sendResponse(res, 200, "Active coupons retrieved successfully", { coupons });
+  } catch (error) {
+    next(error);
+  }
+};
+
 // @desc    Validate coupon code against cart amount
 // @route   POST /api/coupons/validate
 // @access  Public

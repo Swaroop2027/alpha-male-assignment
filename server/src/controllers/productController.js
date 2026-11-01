@@ -1,6 +1,24 @@
 import Product from "../models/Product.js";
 import { ApiError, sendResponse } from "../utils/apiResponse.js";
 
+// Helper to ensure Alpha Boss has working image URLs even before DB re-seed
+const sanitizeProductImage = (prod) => {
+  const p = prod?.toObject ? prod.toObject() : { ...prod };
+  if (p && p.slug === "alpha-boss") {
+    if (
+      !p.images ||
+      p.images.length === 0 ||
+      p.images.some((img) => /photo-1550572017|photo-1584017911766/.test(img))
+    ) {
+      p.images = [
+        "https://images.unsplash.com/photo-1664216294573-b28282de564b?w=800&q=80",
+        "https://images.unsplash.com/photo-1633171031508-a8f26271e8aa?w=800&q=80",
+      ];
+    }
+  }
+  return p;
+};
+
 // @desc    Get all active products with search, filter, and sorting
 // @route   GET /api/products
 // @access  Public
@@ -29,10 +47,11 @@ export const getProducts = async (req, res, next) => {
     else if (sort === "rating") sortOption = { stock: -1 };
 
     const products = await Product.find(query).sort(sortOption);
+    const sanitizedProducts = products.map(sanitizeProductImage);
 
     return sendResponse(res, 200, "Products retrieved successfully", {
-      count: products.length,
-      products,
+      count: sanitizedProducts.length,
+      products: sanitizedProducts,
     });
   } catch (error) {
     next(error);
@@ -54,7 +73,9 @@ export const getProductBySlug = async (req, res, next) => {
       throw new ApiError(`Product not found with slug/id: ${slug}`, 404);
     }
 
-    return sendResponse(res, 200, "Product details retrieved", { product });
+    const sanitizedProduct = sanitizeProductImage(product);
+
+    return sendResponse(res, 200, "Product details retrieved", { product: sanitizedProduct });
   } catch (error) {
     next(error);
   }

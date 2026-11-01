@@ -87,6 +87,10 @@ const CartDrawer = () => {
                   <img
                     src={item.image}
                     alt={item.title}
+                    onError={(e) => {
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src = "https://images.unsplash.com/photo-1664216294573-b28282de564b?w=800&q=80";
+                    }}
                     className="w-full h-full object-cover"
                   />
                 </div>

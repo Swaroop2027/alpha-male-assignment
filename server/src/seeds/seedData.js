@@ -126,8 +126,8 @@ const seedAllData = async () => {
         description:
           "Alpha Boss delivers 32 essential vitamins, chelated minerals, brain-boosting nootropics (Brahmi & Ginkgo Biloba), and potent antioxidants tailored specifically for high-stress executives and ambitious performers.",
         images: [
-          "https://images.unsplash.com/photo-1550572017-edd951aa8f72?w=800&q=80",
-          "https://images.unsplash.com/photo-1584017911766-d451b3d0e843?w=800&q=80",
+          "https://images.unsplash.com/photo-1664216294573-b28282de564b?w=800&q=80",
+          "https://images.unsplash.com/photo-1633171031508-a8f26271e8aa?w=800&q=80",
         ],
         mrp: 1499,
         price: 999,

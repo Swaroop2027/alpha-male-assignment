@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ShoppingBag, Star, Zap, ArrowUpDown, Check } from 'lucide-react';
+import { ShoppingBag, Star, Zap, ArrowUpDown } from 'lucide-react';
 import api from '../api/axios';
 import { useCart } from '../context/CartContext';
 import { useUtm } from '../hooks/useUtm';
@@ -108,24 +108,22 @@ const Storefront = () => {
               </select>
             </div>
 
-            {/* In Stock Filter */}
-            <button
-              onClick={() => setInStockOnly(!inStockOnly)}
-              className={`px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition border ${
-                inStockOnly
-                  ? 'bg-sky-500/20 text-sky-400 border-sky-500/50'
-                  : 'bg-slate-900 text-slate-400 border-slate-800 hover:text-white'
-              }`}
-            >
-              <Check className={`w-3.5 h-3.5 ${inStockOnly ? 'opacity-100' : 'opacity-30'}`} />
-              <span>In Stock Only</span>
-            </button>
+            {/* In-Stock Filter Toggle */}
+            <label className="flex items-center gap-2 bg-slate-900 border border-slate-800 px-3.5 py-2 rounded-xl text-xs text-slate-300 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={inStockOnly}
+                onChange={(e) => setInStockOnly(e.target.checked)}
+                className="rounded border-slate-700 text-sky-500 focus:ring-sky-500 bg-slate-950"
+              />
+              <span>In-Stock Only</span>
+            </label>
           </div>
         </div>
 
         {/* Product Cards Grid */}
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 py-12">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 py-8">
             {[1, 2, 3, 4].map((n) => (
               <div key={n} className="h-96 bg-slate-900/50 rounded-2xl animate-pulse border border-slate-800" />
             ))}
@@ -138,6 +136,7 @@ const Storefront = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 py-8">
             {filteredProducts.map((product) => {
               const discountPercent = Math.round(((product.mrp - product.price) / product.mrp) * 100);
+              const productImage = product.images?.[0] || 'https://images.unsplash.com/photo-1664216294573-b28282de564b?w=800&q=80';
 
               return (
                 <div
@@ -146,8 +145,12 @@ const Storefront = () => {
                 >
                   <Link to={`/product/${product.slug}`} className="block relative aspect-square overflow-hidden bg-slate-950">
                     <img
-                      src={product.images[0]}
+                      src={productImage}
                       alt={product.title}
+                      onError={(e) => {
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.src = 'https://images.unsplash.com/photo-1664216294573-b28282de564b?w=800&q=80';
+                      }}
                       className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
                     />
                     {discountPercent > 0 && (

@@ -55,7 +55,7 @@ const ProductDetail = () => {
       const res = await api.get(`/products/${slug}`);
       const prod = res.data.data.product;
       setProduct(prod);
-      setSelectedImage(prod.images[0] || "");
+      setSelectedImage(prod.images?.[0] || "https://images.unsplash.com/photo-1664216294573-b28282de564b?w=800&q=80");
       fetchReviews(prod._id);
     } catch (err) {
       console.error(err);
@@ -82,7 +82,7 @@ const ProductDetail = () => {
       setPinResult(null);
       const res = await api.get(`/pincodes/check/${pincode}`);
       setPinResult(res.data.data);
-    } catch (err) {
+    } catch {
       setPinResult({ serviceable: false, message: "Unable to verify pincode" });
     } finally {
       setPinLoading(false);
@@ -101,7 +101,7 @@ const ProductDetail = () => {
       });
       setReviewMessage(res.data.message);
       setReviewForm({ customerName: "", rating: 5, comment: "" });
-    } catch (err) {
+    } catch {
       setReviewMessage("Failed to submit review.");
     } finally {
       setReviewSubmitting(false);
@@ -152,10 +152,14 @@ const ProductDetail = () => {
             <img
               src={selectedImage}
               alt={product.title}
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = "https://images.unsplash.com/photo-1664216294573-b28282de564b?w=800&q=80";
+              }}
               className="w-full h-full object-cover"
             />
           </div>
-          {product.images.length > 1 && (
+          {product.images?.length > 1 && (
             <div className="flex gap-3">
               {product.images.map((img, i) => (
                 <button
@@ -170,6 +174,10 @@ const ProductDetail = () => {
                   <img
                     src={img}
                     alt=""
+                    onError={(e) => {
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src = "https://images.unsplash.com/photo-1664216294573-b28282de564b?w=800&q=80";
+                    }}
                     className="w-full h-full object-cover"
                   />
                 </button>
