@@ -302,11 +302,15 @@ export const bulkMarkPacked = async (req, res, next) => {
 };
 
 // @desc    Bulk Action: Print Invoices for multiple orders in one merged PDF
-// @route   POST /api/fulfillment/bulk/print-invoices
+// @route   POST or GET /api/fulfillment/bulk/print-invoices
 // @access  Private (Admin, Operations)
 export const bulkPrintInvoices = async (req, res, next) => {
   try {
-    const { orderIds } = req.body;
+    let orderIds = req.body?.orderIds || req.query?.orderIds;
+    if (typeof orderIds === "string") {
+      orderIds = orderIds.split(",").map((s) => s.trim()).filter(Boolean);
+    }
+
     if (!orderIds || !Array.isArray(orderIds) || orderIds.length === 0) {
       throw new ApiError("Please provide an array of order IDs", 400);
     }
@@ -341,11 +345,15 @@ export const bulkPrintInvoices = async (req, res, next) => {
 };
 
 // @desc    Bulk Action: Print 4x6 Thermal Labels in one merged PDF
-// @route   POST /api/fulfillment/bulk/print-labels
+// @route   POST or GET /api/fulfillment/bulk/print-labels
 // @access  Private (Admin, Operations)
 export const bulkPrintLabels = async (req, res, next) => {
   try {
-    const { orderIds } = req.body;
+    let orderIds = req.body?.orderIds || req.query?.orderIds;
+    if (typeof orderIds === "string") {
+      orderIds = orderIds.split(",").map((s) => s.trim()).filter(Boolean);
+    }
+
     if (!orderIds || !Array.isArray(orderIds) || orderIds.length === 0) {
       throw new ApiError("Please provide an array of order IDs", 400);
     }
@@ -380,11 +388,15 @@ export const bulkPrintLabels = async (req, res, next) => {
 };
 
 // @desc    Bulk Action: Warehouse Picklist (Total quantity of each product)
-// @route   POST /api/fulfillment/bulk/picklist
+// @route   POST or GET /api/fulfillment/bulk/picklist
 // @access  Private (Admin, Operations)
 export const getPicklist = async (req, res, next) => {
   try {
-    const { orderIds } = req.body;
+    let orderIds = req.body?.orderIds || req.query?.orderIds;
+    if (typeof orderIds === "string") {
+      orderIds = orderIds.split(",").map((s) => s.trim()).filter(Boolean);
+    }
+
     if (!orderIds || !Array.isArray(orderIds) || orderIds.length === 0) {
       throw new ApiError("Please provide an array of order IDs", 400);
     }

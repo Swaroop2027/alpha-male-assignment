@@ -20,7 +20,7 @@ const router = express.Router();
 // Public Webhook for Courier Tracking updates
 router.post("/webhook/courier", courierWebhook);
 
-// Public PDF View / Download links
+// Single Order PDF View / Download links (Public / direct access)
 router.get("/orders/:id/invoice-pdf", downloadGstInvoice);
 router.get("/orders/:id/shipping-label-pdf", downloadShippingLabel);
 
@@ -49,14 +49,24 @@ router.post(
   bookCourier,
 );
 
-// Bulk Operations
+// Bulk Operations (Supports both POST and GET for browser tab / blob generation)
 router.post("/bulk/pack", authorize("Admin", "Operations"), bulkMarkPacked);
 router.post(
   "/bulk/print-invoices",
   authorize("Admin", "Operations"),
   bulkPrintInvoices,
 );
+router.get(
+  "/bulk/print-invoices",
+  authorize("Admin", "Operations"),
+  bulkPrintInvoices,
+);
 router.post(
+  "/bulk/print-labels",
+  authorize("Admin", "Operations"),
+  bulkPrintLabels,
+);
+router.get(
   "/bulk/print-labels",
   authorize("Admin", "Operations"),
   bulkPrintLabels,

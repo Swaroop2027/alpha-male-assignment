@@ -13,6 +13,9 @@ export const protect = async (req, res, next) => {
     token = req.headers.authorization.split(" ")[1];
   } else if (req.cookies && req.cookies.token) {
     token = req.cookies.token;
+  } else if (req.query && req.query.token) {
+    // Support token in query string for direct browser PDF/media downloads
+    token = req.query.token;
   }
 
   if (!token) {
@@ -34,7 +37,7 @@ export const protect = async (req, res, next) => {
 
     req.user = user;
     next();
-  } catch (err) {
+  } catch {
     return next(
       new ApiError("Not authorized to access this route. Invalid token.", 401),
     );

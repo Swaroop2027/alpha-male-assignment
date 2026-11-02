@@ -126,7 +126,7 @@ const MyOrders = () => {
               {/* Action buttons */}
               <div className="pt-3 border-t border-slate-800/80 flex flex-wrap gap-3">
                 <a
-                  href={`${API_BASE_URL}/api/fulfillment/orders/${order.orderId}/invoice-pdf`}
+                  href={`${API_BASE_URL}/api/fulfillment/orders/${order.orderId}/invoice-pdf${localStorage.getItem("alpha_token") ? `?token=${encodeURIComponent(localStorage.getItem("alpha_token"))}` : ""}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="px-3.5 py-1.5 bg-slate-950 border border-slate-800 hover:bg-slate-800 text-sky-400 font-semibold rounded-lg text-xs transition flex items-center gap-1.5"

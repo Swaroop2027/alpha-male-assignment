@@ -198,7 +198,7 @@ const OrderConfirmation = () => {
         {/* Action Buttons */}
         <div className="mt-8 pt-6 border-t border-slate-800 flex flex-wrap gap-3 justify-center">
           <a
-            href={`${API_BASE_URL}/api/fulfillment/orders/${order.orderId}/invoice-pdf`}
+            href={`${API_BASE_URL}/api/fulfillment/orders/${order.orderId}/invoice-pdf${localStorage.getItem("alpha_token") ? `?token=${encodeURIComponent(localStorage.getItem("alpha_token"))}` : ""}`}
             target="_blank"
             rel="noopener noreferrer"
             className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-sky-400 font-semibold rounded-xl text-xs transition flex items-center gap-1.5"

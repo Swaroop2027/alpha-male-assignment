@@ -99,22 +99,68 @@ const OrdersManagement = () => {
     }
   };
 
-  // Bulk Print Invoices
+  // Bulk Print Invoices (Uses Axios with Blob & Token Fallback)
   const handleBulkPrintInvoices = async () => {
     if (selectedIds.length === 0) return;
-    window.open(
-      `${API_BASE_URL}/api/fulfillment/bulk/print-invoices?orderIds=${selectedIds.join(",")}`,
-      "_blank",
-    );
+    try {
+      setBulkLoading(true);
+      setActionMessage("Generating Bulk Invoices PDF...");
+      const res = await api.post(
+        "/fulfillment/bulk/print-invoices",
+        { orderIds: selectedIds },
+        { responseType: "blob" },
+      );
+      const blob = new Blob([res.data], { type: "application/pdf" });
+      const fileUrl = window.URL.createObjectURL(blob);
+      const newTab = window.open(fileUrl, "_blank");
+      if (!newTab) {
+        const link = document.createElement("a");
+        link.href = fileUrl;
+        link.download = `Bulk-Invoices-${Date.now()}.pdf`;
+        link.click();
+      }
+      setActionMessage("✓ Bulk Invoices PDF opened successfully!");
+    } catch {
+      const token = localStorage.getItem("alpha_token") || "";
+      window.open(
+        `${API_BASE_URL}/api/fulfillment/bulk/print-invoices?orderIds=${selectedIds.join(",")}&token=${encodeURIComponent(token)}`,
+        "_blank",
+      );
+    } finally {
+      setBulkLoading(false);
+    }
   };
 
-  // Bulk Print 4x6 Thermal Labels
+  // Bulk Print 4x6 Thermal Labels (Uses Axios with Blob & Token Fallback)
   const handleBulkPrintLabels = async () => {
     if (selectedIds.length === 0) return;
-    window.open(
-      `${API_BASE_URL}/api/fulfillment/bulk/print-labels?orderIds=${selectedIds.join(",")}`,
-      "_blank",
-    );
+    try {
+      setBulkLoading(true);
+      setActionMessage("Generating Bulk 4x6\" Thermal Labels PDF...");
+      const res = await api.post(
+        "/fulfillment/bulk/print-labels",
+        { orderIds: selectedIds },
+        { responseType: "blob" },
+      );
+      const blob = new Blob([res.data], { type: "application/pdf" });
+      const fileUrl = window.URL.createObjectURL(blob);
+      const newTab = window.open(fileUrl, "_blank");
+      if (!newTab) {
+        const link = document.createElement("a");
+        link.href = fileUrl;
+        link.download = `Bulk-ShippingLabels-${Date.now()}.pdf`;
+        link.click();
+      }
+      setActionMessage("✓ Bulk 4x6\" Labels PDF opened successfully!");
+    } catch {
+      const token = localStorage.getItem("alpha_token") || "";
+      window.open(
+        `${API_BASE_URL}/api/fulfillment/bulk/print-labels?orderIds=${selectedIds.join(",")}&token=${encodeURIComponent(token)}`,
+        "_blank",
+      );
+    } finally {
+      setBulkLoading(false);
+    }
   };
 
   // View Warehouse Picklist
@@ -437,7 +483,7 @@ const OrdersManagement = () => {
                       <div className="flex items-center justify-end gap-1.5">
                         {/* GST Invoice PDF */}
                         <a
-                          href={`${API_BASE_URL}/api/fulfillment/orders/${o.orderId}/invoice-pdf`}
+                          href={`${API_BASE_URL}/api/fulfillment/orders/${o.orderId}/invoice-pdf${localStorage.getItem("alpha_token") ? `?token=${encodeURIComponent(localStorage.getItem("alpha_token"))}` : ""}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="p-1.5 bg-slate-800 hover:bg-slate-700 text-sky-400 rounded-lg"
@@ -448,7 +494,7 @@ const OrdersManagement = () => {
 
                         {/* 4x6 Thermal Label PDF */}
                         <a
-                          href={`${API_BASE_URL}/api/fulfillment/orders/${o.orderId}/shipping-label-pdf`}
+                          href={`${API_BASE_URL}/api/fulfillment/orders/${o.orderId}/shipping-label-pdf${localStorage.getItem("alpha_token") ? `?token=${encodeURIComponent(localStorage.getItem("alpha_token"))}` : ""}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="p-1.5 bg-slate-800 hover:bg-slate-700 text-amber-400 rounded-lg"
@@ -612,7 +658,7 @@ const OrdersManagement = () => {
             {/* PDFs Actions */}
             <div className="flex gap-3 pt-4 border-t border-slate-800">
               <a
-                href={`${API_BASE_URL}/api/fulfillment/orders/${activeOrder.orderId}/invoice-pdf`}
+                href={`${API_BASE_URL}/api/fulfillment/orders/${activeOrder.orderId}/invoice-pdf${localStorage.getItem("alpha_token") ? `?token=${encodeURIComponent(localStorage.getItem("alpha_token"))}` : ""}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-sky-400 text-xs font-bold rounded-xl text-center flex items-center justify-center gap-1.5"
@@ -622,7 +668,7 @@ const OrdersManagement = () => {
               </a>
 
               <a
-                href={`${API_BASE_URL}/api/fulfillment/orders/${activeOrder.orderId}/shipping-label-pdf`}
+                href={`${API_BASE_URL}/api/fulfillment/orders/${activeOrder.orderId}/shipping-label-pdf${localStorage.getItem("alpha_token") ? `?token=${encodeURIComponent(localStorage.getItem("alpha_token"))}` : ""}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-amber-400 text-xs font-bold rounded-xl text-center flex items-center justify-center gap-1.5"
